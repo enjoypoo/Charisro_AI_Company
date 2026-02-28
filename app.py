@@ -310,7 +310,22 @@ def main():
         
         st.divider()
         st.header("3. 프로젝트 폴더 설정")
-        project_name = st.text_input("프로젝트 이름", value="demo_project")
+        
+        # 기존 프로젝트 폴더 목록 불러오기
+        projects_base_dir = "projects"
+        existing_projects = []
+        if os.path.exists(projects_base_dir):
+            existing_projects = [d for d in os.listdir(projects_base_dir) if os.path.isdir(os.path.join(projects_base_dir, d))]
+            # 숨김 폴더 등을 제외하고 순수 디렉토리 이름만 필터링 (선택적)
+            existing_projects = [p for p in existing_projects if not p.startswith(".")]
+            
+        options = ["신규 프로젝트"] + existing_projects
+        selected_project = st.selectbox("프로젝트 선택", options)
+        
+        if selected_project == "신규 프로젝트":
+            project_name = st.text_input("프로젝트 이름", value="", placeholder="새로운 프로젝트 이름을 입력하세요")
+        else:
+            project_name = st.text_input("프로젝트 이름", value=selected_project, disabled=True)
         
     llm_configs = {
         'pm_llm': pm_model,
