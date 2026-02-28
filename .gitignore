@@ -1,0 +1,25 @@
+# Environments
+.env
+.venv/
+env/
+
+# Byte-compiled
+__pycache__/
+*.pyc
+*.pyo
+
+# IDEs
+.vscode/
+.idea/
+
+# Streamlit/OS
+.streamlit/
+.DS_Store
+
+# Data & outputs (Do not commit generated agent logs or heavy pdf uploads)
+projects/
+outputs/
+uploads/
+*.pdf
+*.pptx
+*.db
