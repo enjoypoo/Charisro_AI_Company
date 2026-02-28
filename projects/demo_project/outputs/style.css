@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 프로젝트의 전체적인 색상 팔레트 정의 */
+:root {
+    --color-primary: #00A6FB;
+    --color-secondary: #FFA500;
+    --color-background: #F4F9FD;
+    --color-text: #333333;
+    --color-white: #FFFFFF;
+}
+
+/* 기본적인 레이아웃 스타일 */
+.body {
+    @apply bg-background text-text min-h-screen;
+}
+
+.container {
+    @apply mx-auto p-4 max-w-screen-lg;
+}
+
+.header {
+    @apply bg-primary text-white p-4 flex justify-between items-center;
+}
+
+/* 앨범 생성 페이지 스타일 */
+.album {
+    @apply bg-white shadow-md rounded-lg p-4 mb-4;
+}
+
+.album-title {
+    @apply text-xl font-semibold mb-2;
+}
+
+.album-description {
+    @apply text-gray-600 mb-2;
+}
+
+.photo-grid {
+    @apply grid grid-cols-2 gap-2;
+}
+
+.photo-item {
+    @apply rounded shadow overflow-hidden;
+}
+
+/* 상세 기록 스타일 */
+.detail {
+    @apply flex flex-col gap-4;
+}
+
+.detail-section {
+    @apply bg-white p-4 rounded shadow;
+}
+
+.detail-title {
+    @apply text-lg font-bold mb-2;
+}
+
+.input-field {
+    @apply border border-gray-300 rounded p-2 w-full;
+}
+
+.caption {
+    @apply text-sm text-gray-600;
+}
+
+/* 날짜별 목록 스타일 */
+.date-list {
+    @apply flex flex-col gap-4;
+}
+
+.date-section {
+    @apply text-primary font-bold mt-8 mb-4;
+}
+
+/* PDF 내보내기 버튼 스타일 */
+.pdf-export {
+    @apply bg-secondary text-white font-bold py-2 px-4 rounded;
+}
+
+/* 사진의 풀스크린 보기 스타일 */
+.fullscreen-photo {
+    @apply fixed left-0 top-0 w-full h-full bg-black flex items-center justify-center;
+}
+
+.fullscreen-photo img {
+    @apply max-w-full max-h-full;
+}
+
+.overlay-caption {
+    @apply absolute bottom-0 bg-black bg-opacity-75 text-white text-sm p-2 w-full text-center;
+}

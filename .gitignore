@@ -16,10 +16,5 @@ __pycache__/
 .streamlit/
 .DS_Store
 
-# Data & outputs (Do not commit generated agent logs or heavy pdf uploads)
-projects/
-outputs/
-uploads/
-*.pdf
-*.pptx
-*.db
+# Data & outputs
+# Removed the exclusions for projects/ to allow syncing to GitHub
