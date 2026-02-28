@@ -269,63 +269,134 @@ def run_crew(project_name, topic, context_text, llm_configs, task_flags):
 # ==========================================
 # 4. Streamlit UI (main)
 # ==========================================
+# ==========================================
+# 4. Streamlit UI (main)
+# ==========================================
 def main():
-    st.set_page_config(page_title="Charisro AI Dashboard", page_icon="🤖", layout="wide")
+    st.set_page_config(page_title="Charisro AI Master", page_icon="💡", layout="wide")
     
-    st.title("🤖 카리스로(Charisro) AI: 나노바나나 업그레이드 에디션")
-    st.markdown("수석 PM, UX/UI 전문가, 개발자, PPT 마스터가 선택적으로 협업하며 일체형 결과물을 파일 시스템으로 도출합니다.")
-    
-    # 사이드바 설정 영역
-    with st.sidebar:
-        st.header("1. API Key 연동 상태")
+    # [커스텀 CSS 주입 - 최신 트렌드 반영 디자인]
+    st.markdown("""
+    <style>
+        /* 메인 배경색 및 폰트 부드럽게 */
+        .stApp {
+            background-color: #f8fafc;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
         
-        # 나노바나나(Gemini) 통합 키 프로세스
-        gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        if gemini_key:
-            st.success("✅ Gemini (나노바나나) API Key 등록됨")
-        else:
-            new_gemini = st.text_input("Gemini API Key (플래닝 및 나노바나나 이미지 필수)", type="password")
-            if new_gemini: os.environ["GEMINI_API_KEY"] = new_gemini
-            
-        openai_key = os.getenv("OPENAI_API_KEY")
-        if openai_key:
-            st.success("✅ OpenAI API Key 등록됨")
-        else:
-            new_openai = st.text_input("OpenAI API Key (미입력 시 에러 가능)", type="password")
-            if new_openai: os.environ["OPENAI_API_KEY"] = new_openai
-            
-        anthropic_key = os.getenv("ANTHROPIC_API_KEY")
-        if anthropic_key:
-            st.success("✅ Anthropic API Key 등록됨")
-        else:
-            new_anthropic = st.text_input("Anthropic API Key (Claude 구동 시 필요)", type="password")
-            if new_anthropic: os.environ["ANTHROPIC_API_KEY"] = new_anthropic
+        /* 텍스트 컨테이너 그라데이션 포인트 */
+        .main-header {
+            background: linear-gradient(90deg, #4f46e5 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 0px;
+        }
+        .sub-header {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
 
-        st.divider()
-        st.header("2. 에이전트 브레인 선택")
-        pm_model = st.selectbox("수석 PM (기획)", ["gemini/gemini-2.5-flash", "gemini/gemini-2.5-pro", "gemini/gemini-1.5-pro"])
-        designer_model = st.selectbox("UX/UI 전략가", ["openai/gpt-4o", "openai/gpt-4-turbo"])
-        developer_model = st.selectbox("수석 엔지니어 (코드)", ["anthropic/claude-3-opus-20240229", "anthropic/claude-sonnet-4-6", "anthropic/claude-3-5-sonnet-20241022", "gemini/gemini-2.5-flash"])
-        ppt_model = st.selectbox("PPT 마스터 (대본/나노바나나)", ["openai/gpt-4o", "openai/gpt-4-turbo"])
+        /* 카드 UI 느낌 적용 (expander, 컨테이너 테두리 부드럽게) */
+        div[data-testid="stExpander"] {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            background-color: white;
+            margin-bottom: 12px;
+        }
         
-        st.divider()
-        st.header("3. 프로젝트 폴더 설정")
+        /* 알림창(info) 레이아웃 개선 */
+        div.stAlert {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
         
-        # 기존 프로젝트 폴더 목록 불러오기
-        projects_base_dir = "projects"
-        existing_projects = []
-        if os.path.exists(projects_base_dir):
-            existing_projects = [d for d in os.listdir(projects_base_dir) if os.path.isdir(os.path.join(projects_base_dir, d))]
-            # 숨김 폴더 등을 제외하고 순수 디렉토리 이름만 필터링 (선택적)
-            existing_projects = [p for p in existing_projects if not p.startswith(".")]
+        /* 탭 디자인 모던하게 */
+        button[data-baseweb="tab"] {
+            border-radius: 8px 8px 0 0;
+            background-color: transparent !important;
+        }
+        button[data-baseweb="tab"][aria-selected="true"] {
+            border-bottom: 3px solid #4f46e5 !important;
+            color: #4f46e5 !important;
+            font-weight: bold;
+        }
+        
+        /* 입력 컴포넌트 라운딩 */
+        div[data-baseweb="input"] > div {
+            border-radius: 8px;
+        }
+        textarea {
+            border-radius: 8px !important;
+        }
+        
+        /* 하단 메인 덩어리 나누기용 여백 */
+        .section-divider {
+            margin-top: 40px;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('<h1 class="main-header">💡 카리스로(Charisro) AI 스튜디오</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">수석 PM, 디자이너, 개발자, PPT 마스터가 하나 된 초지능 자율형 워크스페이스입니다. 🚀</p>', unsafe_allow_html=True)
+    
+    # ==========================
+    # 사이드바 설정 영역 (Expander를 통한 깔끔한 정리)
+    # ==========================
+    with st.sidebar:
+        st.image("https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=600&auto=format&fit=crop", caption="카리스로 AI", use_container_width=True)
+        st.markdown("### ⚙️ 시스템 관제 센터")
+        
+        with st.expander("🔑 1. API Key 연동 상태", expanded=False):
+            gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+            if gemini_key:
+                st.success("✅ Gemini (나노바나나) Key 연동 완료")
+            else:
+                new_gemini = st.text_input("Gemini API Key (필수)", type="password")
+                if new_gemini: os.environ["GEMINI_API_KEY"] = new_gemini
+                
+            openai_key = os.getenv("OPENAI_API_KEY")
+            if openai_key:
+                st.success("✅ OpenAI Key 연동 완료")
+            else:
+                new_openai = st.text_input("OpenAI API Key (선택)", type="password")
+                if new_openai: os.environ["OPENAI_API_KEY"] = new_openai
+                
+            anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+            if anthropic_key:
+                st.success("✅ Anthropic Claude Key 연동 완료")
+            else:
+                new_anthropic = st.text_input("Anthropic Key (Claude 코딩 시 필수)", type="password")
+                if new_anthropic: os.environ["ANTHROPIC_API_KEY"] = new_anthropic
+
+        with st.expander("🧠 2. 에이전트 브레인 선택", expanded=False):
+            pm_model = st.selectbox("수석 PM (기획)", ["gemini/gemini-2.5-flash", "gemini/gemini-2.5-pro", "gemini/gemini-1.5-pro"])
+            designer_model = st.selectbox("UX/UI 전략가", ["openai/gpt-4o", "openai/gpt-4-turbo"])
+            developer_model = st.selectbox("수석 엔지니어 (코드)", ["anthropic/claude-3-opus-20240229", "anthropic/claude-sonnet-4-6", "anthropic/claude-3-5-sonnet-20241022", "gemini/gemini-2.5-flash"])
+            ppt_model = st.selectbox("PPT 마스터 (대본/나노바나나)", ["openai/gpt-4o", "openai/gpt-4-turbo"])
             
-        options = ["신규 프로젝트"] + existing_projects
-        selected_project = st.selectbox("프로젝트 선택", options)
-        
-        if selected_project == "신규 프로젝트":
-            project_name = st.text_input("프로젝트 이름", value="", placeholder="새로운 프로젝트 이름을 입력하세요")
-        else:
-            project_name = st.text_input("프로젝트 이름", value=selected_project, disabled=True)
+        with st.expander("📁 3. 프로젝트 폴더 통합관리", expanded=True):
+            projects_base_dir = "projects"
+            existing_projects = []
+            if os.path.exists(projects_base_dir):
+                existing_projects = [d for d in os.listdir(projects_base_dir) if os.path.isdir(os.path.join(projects_base_dir, d))]
+                existing_projects = [p for p in existing_projects if not p.startswith(".")]
+                
+            options = ["신규 프로젝트"] + existing_projects
+            selected_project = st.selectbox("작업할 공간 불러오기", options)
+            
+            if selected_project == "신규 프로젝트":
+                project_name = st.text_input("프로젝트 명칭 (Space NO)", value="", placeholder="새 공간의 이름을 지어주세요")
+            else:
+                project_name = st.text_input("프로젝트 명칭", value=selected_project, disabled=True)
+                st.caption(f"이어서 작업합니다: `projects/{selected_project}/outputs/`")
         
     llm_configs = {
         'pm_llm': pm_model,
@@ -338,52 +409,68 @@ def main():
     uploads_dir = os.path.join(base_dir, "uploads")
     outputs_dir = os.path.join(base_dir, "outputs")
     
-    # 메인 영역 상단 분리
-    st.subheader("📚 1. 카리스로 작업 파이프라인 (원하는 역할만 지시하세요!)")
+    # ==========================
+    # 메인 영역 (카드 스타일 컨테이너)
+    # ==========================
+    st.markdown("### 🎯 STEP 1. 카리스로 업무 패키지 설정")
+    st.info("원하지 않는 업무는 체크를 해제하여 배제하십시오. 선택된 전문가들만 선별되어 고속으로 파이프라인을 관통합니다.")
+    
+    # 깔끔한 체크박스 4열 배치 카드형 UI
     col0_1, col0_2, col0_3, col0_4 = st.columns(4)
     with col0_1:
-        st.info("🦸‍♂️ 수석 PM")
+        st.markdown("**🦸‍♂️ [1] 수석 PM 파트**")
         run_plan = st.checkbox("문서 분석 및 상세 기획안 도출", value=True, disabled=True, help="기획은 전체 파이프라인의 핵심이므로 끌 수 없습니다.")
     with col0_2:
-        st.info("👩‍🎨 디자이너")
-        run_design = st.checkbox("디자인 및 UI (Tailwind) 명세 작성", value=True)
+        st.markdown("**👩‍🎨 [2] 디자이너 파트**")
+        run_design = st.checkbox("디자인 및 UI (Tailwind) 명세", value=True)
     with col0_3:
-        st.info("👩‍💻 개발자")
-        run_code = st.checkbox("Next.js / Node.js 핵심 코드 설계", value=False)
+        st.markdown("**👩‍💻 [3] 개발자 파트**")
+        run_code = st.checkbox("Next.js / Node.js 코드 설계", value=False)
     with col0_4:
-        st.info("📊 PPT 마스터")
-        run_ppt = st.checkbox("나노바나나 이미지 연동 PPTX 자동생성", value=True)
+        st.markdown("**📊 [4] PPT 마스터 파트**")
+        run_ppt = st.checkbox("나노바나나 연동 PPTX 자동생성", value=True)
 
     task_flags = {
         "run_design": run_design,
         "run_code": run_code,
         "run_ppt": run_ppt
     }
+    
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns([2, 1])
+    # 지시사항 2열 배치
+    col1, col2 = st.columns([1.5, 1], gap="large")
     with col1:
-        st.subheader("📝 2. 기획 지시사항")
-        topic = st.text_area("프로젝트 주제, 방향성 등 상세한 지시를 내려주세요.", height=120)
+        st.markdown("### 📝 STEP 2. 기획 브리핑")
+        topic = st.text_area("프로젝트 주제, 방향성 등 에이전트들을 이끌어갈 상세한 최상위 목표를 하달하십시오.", height=160, placeholder="예) 현대 직장인을 위한 스트레스 완화 힐링 커뮤니티 플랫폼 기획 및 IR 피칭 구조 설계")
         
     with col2:
-        st.subheader("📁 3. NotebookLM 딥다운 컨텍스트")
+        st.markdown("### 📚 STEP 3. NotebookLM 지식 센터")
         uploaded_files = st.file_uploader(
-            "강력하게 참고해야 할 지식(PDF, PPTX, TXT)을 업로드하세요.",
+            "강제로 주입할 절대적 컨텍스트(PDF, PPTX, TXT)를 드래그 앤 드롭 하세요.",
             type=["pdf", "pptx", "txt"],
             accept_multiple_files=True
         )
-        
-    if st.button("🚀 카리스로 맞춤형 군단 가동하기", use_container_width=True):
+        if uploaded_files:
+            st.success(f"📎 {len(uploaded_files)}개의 문헌이 RAG 기반으로 치프(PM)의 뇌에 이식됩니다.")
+
+    st.markdown('<br>', unsafe_allow_html=True)
+    
+    # 거대한 시작 버튼 (CTA)
+    if st.button("🚀 카리스로 전 직원 업무 돌입하기", use_container_width=True, type="primary"):
+        if not project_name.strip():
+            st.error("프로젝트 폴더 이름을 설정해야 출근을 시작할 수 있습니다!")
+            return
         if not topic.strip():
-            st.error("프로젝트 주제를 입력해주세요!")
+            st.error("치프 PM 파트: 프로젝트 주제 브리핑을 입력해주세요!")
             return
             
         used_providers = [m.split('/')[0] for m in llm_configs.values()]
         if "gemini" in used_providers and not os.getenv("GEMINI_API_KEY"):
-            st.error("Gemini 모델이 선택되었지만 API Key가 누락되었습니다. 사이드바에 입력해주세요.")
+            st.error("Gemini 모델이 선택되었지만 API Key가 누락되었습니다. 좌측 사이드바 1번 항목 입력 란을 열어주세요.")
             return
         if "openai" in used_providers and not os.getenv("OPENAI_API_KEY"):
-            st.error("OpenAI 모델이 선택되었지만 API Key가 누락되었습니다. 사이드바에 입력해주세요.")
+            st.error("OpenAI 모델이 선택되었지만 API Key가 누락되었습니다. 좌측 사이드바 1번 항목 입력 란을 열어주세요.")
             return
         if run_code and "anthropic" in developer_model and not os.getenv("ANTHROPIC_API_KEY"):
             st.error("Anthropic(Claude) 모델이 코딩에 할당되었지만 API Key가 누락되었습니다.")
@@ -404,28 +491,32 @@ def main():
                         context_text += f"\n\n--- [참고원문: {uf.name}] ---\n" + extracted
             st.success("데이터 추출 및 Context 주입 완료! 수석 PM이 이를 최우선으로 참고합니다.")
             
-        with st.status("🧠 에이전트들이 선택된 파이프라인만 집중적으로 수행 중입니다...", expanded=True) as status:
+        with st.status("🧠 에이전트 군단이 선택된 패키지만 집중적으로 돌파하고 있습니다...", expanded=True) as status:
             try:
                 result = run_crew(project_name, topic, context_text, llm_configs, task_flags)
-                status.update(label="✅ 맞춤형 작업이 성공적으로 완료되었습니다!", state="complete", expanded=False)
+                status.update(label="✅ 맞춤형 작업이 완벽하게 릴리즈 되었습니다!", state="complete", expanded=False)
             except Exception as e:
-                status.update(label="❌ 에러가 발생했습니다.", state="error")
+                status.update(label="❌ 치명적 시스템 에러", state="error")
                 st.error(f"실행 중 구조적 오류가 발생했습니다: {str(e)}")
                 return
                 
-        st.success("모든 처리가 끝났습니다. 하단 대시보드에서 산출물을 확인하세요.")
+        st.balloons()
+        st.success(f"🎉 모든 처리가 무사히 끝났습니다. 하단 대시보드 또는 `projects/{project_name}/outputs/`에서 산출물을 수집하세요.")
         
-    st.divider()
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
     
-    st.header("📊 커스텀 결과물 대시보드")
+    # ==========================
+    # 결과물 대시보드 영역 (모던 탭)
+    # ==========================
+    st.markdown("### 📊 카리스로 결과물 창고")
     if os.path.exists(outputs_dir):
         files = os.listdir(outputs_dir)
         if files:
             tabs_data = {
                 "기획서 (plan.md)": "plan.md",
-                "디자인 (style.css, ui.md)": None, # Complex
+                "디자인 (style.css, ui.md)": None,
                 "코드 (app.js)": "app.js",
-                "대본 (pitch_script.md)": "pitch_script.md",
+                "대본 (pitch_script)": "pitch_script.md",
                 "발표파일 (presentation.pptx)": "presentation.pptx",
             }
             
@@ -436,7 +527,7 @@ def main():
                 if os.path.exists(path):
                     with open(path, "r", encoding="utf-8") as f:
                         return f.read()
-                return "현재 사이클에서 생략되었거나, 아직 산출되지 않은 결과물입니다."
+                return "현재 사이클에서 배제되었거나, 시스템이 아직 추출하지 못한 결과물입니다."
                 
             def get_file_bytes(filename):
                 path = os.path.join(outputs_dir, filename)
@@ -448,45 +539,47 @@ def main():
             with tabs[0]:
                 st.markdown(read_file("plan.md"))
                 bt = get_file_bytes("plan.md")
-                if bt: st.download_button("📝 plan.md 다운로드", data=bt, file_name="plan.md", mime="text/markdown")
+                if bt: st.download_button("📝 plan.md 다운로드", data=bt, file_name="plan.md", mime="text/markdown", key="dl_plan")
             
             with tabs[1]:
                 ui_content = read_file("ui_components.md")
                 css_content = read_file("style.css")
-                st.subheader("UI 명세")
+                st.markdown("#### 1. UI 명세서")
                 st.markdown(ui_content)
                 bt1 = get_file_bytes("ui_components.md")
-                if bt1: st.download_button("🧩 ui_components.md 다운로드", data=bt1, file_name="ui_components.md")
+                if bt1: st.download_button("🧩 ui_components.md 다운로드", data=bt1, file_name="ui_components.md", key="dl_ui")
                 
-                st.subheader("스타일 시트")
+                st.markdown("---")
+                st.markdown("#### 2. 스타일 시트")
                 st.code(css_content, language="css")
                 bt2 = get_file_bytes("style.css")
-                if bt2: st.download_button("🎨 style.css 다운로드", data=bt2, file_name="style.css")
+                if bt2: st.download_button("🎨 style.css 다운로드", data=bt2, file_name="style.css", key="dl_css")
                 
             with tabs[2]:
                 st.code(read_file("app.js"), language="javascript")
                 bt = get_file_bytes("app.js")
-                if bt: st.download_button("💻 app.js 다운로드", data=bt, file_name="app.js")
+                if bt: st.download_button("💻 node/react 코어앱 (app.js) 다운로드", data=bt, file_name="app.js", key="dl_js")
                 
             with tabs[3]:
                 st.markdown(read_file("pitch_script.md"))
                 bt = get_file_bytes("pitch_script.md")
-                if bt: st.download_button("🎙️ pitch_script.md 다운로드", data=bt, file_name="pitch_script.md")
+                if bt: st.download_button("🎙️ IR 피칭 대본 (markdown) 다운로드", data=bt, file_name="pitch_script.md", key="dl_pitch")
                 
             with tabs[4]:
-                st.info("나노바나나 협동: PPT 마스터가 AI 상징 레이아웃을 접목하여 자동 생성한 발표 파일입니다.")
+                st.info("나노바나나 콜라보: PPT 마스터가 Gemini 3.0 Imagen 초상징 이미지를 합성하여 자동 생성한 발표 파일입니다.")
                 bt = get_file_bytes("presentation.pptx")
                 if bt: 
                     st.download_button(
-                        label="📥 나노바나나 presentation.pptx 다운로드", 
+                        label="📥 나노바나나 에디션 presentation.pptx 다운로드", 
                         data=bt, file_name="presentation.pptx", 
                         mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                        type="primary"
+                        type="primary",
+                        key="dl_pptx"
                     )
         else:
-            st.info("아직 생성된 결과물이 없습니다.")
+            st.info("선택된 프로젝트 폴더에 아직 산출된 데이터가 없습니다. 상단의 메인 엔진을 구동시켜주세요.")
     else:
-        st.info("프로젝트 폴더가 비어있습니다.")
+        st.info("프로젝트 폴더가 비어있습니다. 우측 상단의 엔진에 연료를 넣으십시오.")
 
 if __name__ == "__main__":
     main()
