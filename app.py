@@ -277,11 +277,14 @@ def main():
         # 선택된 프로바이더에 해당하는 API 키가 환경 변수에 존재하는지 확인하는 방어 기제
         used_providers = [m.split('/')[0] for m in llm_configs.values()]
         if "gemini" in used_providers and not os.getenv("GEMINI_API_KEY"):
-            st.error("Gemini 모델이 선택되었지만 API Key가 누락되었습니다. 사이드바에 입력해주세요.") return
+            st.error("Gemini 모델이 선택되었지만 API Key가 누락되었습니다. 사이드바에 입력해주세요.")
+            return
         if "openai" in used_providers and not os.getenv("OPENAI_API_KEY"):
-            st.error("OpenAI 모델이 선택되었지만 API Key가 누락되었습니다. 사이드바에 입력해주세요.") return
+            st.error("OpenAI 모델이 선택되었지만 API Key가 누락되었습니다. 사이드바에 입력해주세요.")
+            return
         if "anthropic" in used_providers and not os.getenv("ANTHROPIC_API_KEY"):
-            st.error("Anthropic(Claude) 모델이 선택되었지만 API Key가 누락되었습니다. 사이드바에 입력해주세요.") return
+            st.error("Anthropic(Claude) 모델이 선택되었지만 API Key가 누락되었습니다. 사이드바에 입력해주세요.")
+            return
             
         os.makedirs(uploads_dir, exist_ok=True)
         os.makedirs(outputs_dir, exist_ok=True)
