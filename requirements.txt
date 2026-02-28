@@ -4,3 +4,4 @@ crewai-tools==1.9.3
 python-pptx==1.0.2
 PyPDF2==3.0.1
 python-dotenv
+requirements.txt update: google-generativeai
